@@ -1700,8 +1700,8 @@ fn page_layout(app: &mut SheetApp, ui: &mut Ui) {
     let sh = app
         .session
         .active()
-        .and_then(|d| d.wb.active().map(|s| (s.show_gridlines, s.show_headings, s.print.gridlines, s.print.headings, s.focus_cell)))
-        .unwrap_or((true, true, false, false, false));
+        .and_then(|d| d.wb.active().map(|s| (s.show_gridlines, s.show_headings, s.print.gridlines, s.print.headings)))
+        .unwrap_or((true, true, false, false));
     // These two checkboxes mean the screen view vs. the printed page. English shows "View" (as in
     // Excel), but the key is distinct from the "View" tab so languages can word them apart.
     let screen = app.ui.language.tr("Sheet Options|View");
@@ -1734,15 +1734,6 @@ fn page_layout(app: &mut SheetApp, ui: &mut Ui) {
         control_keytip(app, ui, &resp, "pageLayout.printHeadings");
         if resp.changed() || invoke(app, "pageLayout.printHeadings") {
             act(app, "pageLayout.printHeadings", json!({"on": checkbox_on(resp.changed(), p)}));
-        }
-    });
-    ui.vertical(|ui| {
-        ui.label(egui::RichText::new(app.ui.language.tr("Focus Cell")).strong().small());
-        let mut v = sh.4;
-        let resp = ui.checkbox(&mut v, screen);
-        control_keytip(app, ui, &resp, "view.focusCell");
-        if resp.changed() || invoke(app, "view.focusCell") {
-            act(app, "view.focusCell", json!({"on": checkbox_on(resp.changed(), v)}));
         }
     });
     let rtl = app.session.active().and_then(|d| d.wb.active()).is_some_and(|s| s.right_to_left);
@@ -2122,7 +2113,7 @@ fn view(app: &mut SheetApp, ui: &mut Ui) {
         }
     }
     sep(ui);
-    let s = app.session.active().and_then(|d| d.wb.active().map(|s| (s.show_gridlines, s.show_headings))).unwrap_or((true, true));
+    let s = app.session.active().and_then(|d| d.wb.active().map(|s| (s.show_gridlines, s.show_headings, s.focus_cell))).unwrap_or((true, true, false));
     let lang = app.ui.language;
     let page_layout =
         app.session.active().and_then(|d| d.wb.active().map(|s| s.view == gridcraft_engine::model::SheetViewMode::PageLayout)).unwrap_or(false);
@@ -2155,6 +2146,12 @@ fn view(app: &mut SheetApp, ui: &mut Ui) {
         control_keytip(app, ui, &resp, "view.headings");
         if resp.changed() {
             act(app, "view.headings", json!({"on": h}));
+        }
+        let mut fc = s.2;
+        let resp = ui.checkbox(&mut fc, lang.tr("Focus Cell"));
+        control_keytip(app, ui, &resp, "view.focusCell");
+        if resp.changed() {
+            act(app, "view.focusCell", json!({"on": fc}));
         }
     });
     sep(ui);
