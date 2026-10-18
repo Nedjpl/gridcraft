@@ -25,6 +25,7 @@ pub fn specs() -> Vec<CommandSpec> {
         cmd!("view.unfreezePanes", "Unfreeze Panes", ["View", "Window", "Freeze Panes"], None, "{}", has_doc, |s, _| set_freeze(s, None)),
         cmd!("view.gridlines", "Gridlines", ["View", "Show"], None, "{on?}", has_doc, |s, p| sheet_flag(s, p, "gridlines")),
         cmd!("view.headings", "Headings", ["View", "Show"], None, "{on?}", has_doc, |s, p| sheet_flag(s, p, "headings")),
+        cmd!("view.focusCell", "Focus Cell", ["View", "Show"], None, "{on?}", has_doc, |s, p| sheet_flag(s, p, "focusCell")),
         cmd!("view.showZeros", "Show Zeros", [], None, "{on?}", has_doc, |s, p| sheet_flag(s, p, "zeros")),
         cmd!("view.rightToLeft", "Sheet Right-to-Left", ["Page Layout", "Sheet Options"], None, "{on?}", has_doc, |s, p| sheet_flag(s, p, "rtl")),
         cmd!("view.zoom", "Zoom", ["View", "Zoom"], None, "{percent: 10..400}", has_doc, zoom),
@@ -142,6 +143,7 @@ fn sheet_flag(s: &mut Session, p: &Json, which: &str) -> Result<Json> {
         let slot = match which {
             "gridlines" => &mut sh.show_gridlines,
             "headings" => &mut sh.show_headings,
+            "focusCell" => &mut sh.focus_cell,
             "zeros" => &mut sh.show_zeros,
             "rtl" => &mut sh.right_to_left,
             "printGridlines" => &mut sh.print.gridlines,

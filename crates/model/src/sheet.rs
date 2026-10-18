@@ -77,6 +77,9 @@ pub struct Sheet {
     pub show_formulas: bool,
     pub show_zeros: bool,
     pub right_to_left: bool,
+    /// Excel's "Focus Cell": highlight the active cell's row and column.
+    #[serde(default)]
+    pub focus_cell: bool,
     pub zoom: u16,
     pub cond_formats: Vec<CondFormat>,
     pub validations: Vec<Validation>,
@@ -144,6 +147,7 @@ impl Sheet {
             show_formulas: false,
             show_zeros: true,
             right_to_left: false,
+            focus_cell: false,
             zoom: 100,
             cond_formats: vec![],
             validations: vec![],
