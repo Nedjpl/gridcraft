@@ -164,7 +164,8 @@ pub(crate) fn paint_pages(
         grid::paint_quadrant(&pc, geo, wb, si, sh, rows, cols, cf, t);
         if sh.focus_cell && sh.freeze.is_none() {
             let active = sel.active;
-            let color = egui::Color32::from_rgba_unmultiplied(0x10, 0x7C, 0x41, 0x18);
+            let rgb = sh.focus_cell_color.and_then(|c| c.resolve(&wb.theme)).unwrap_or([0x10, 0x7C, 0x41]);
+            let color = egui::Color32::from_rgba_unmultiplied(rgb[0], rgb[1], rgb[2], 0x18);
             let clipr = pc.clip_rect();
             if active.row >= rows.0 && active.row <= rows.1 {
                 let rr = geo.range_rect(sh, gridcraft_engine::core::RangeRef::new(gridcraft_engine::core::CellRef::new(active.row, cols.0), gridcraft_engine::core::CellRef::new(active.row, cols.1)));

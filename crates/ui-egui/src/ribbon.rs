@@ -2153,6 +2153,13 @@ fn view(app: &mut SheetApp, ui: &mut Ui) {
         if resp.changed() {
             act(app, "view.focusCell", json!({"on": fc}));
         }
+        let colors = app.session.active().map(|d| d.wb.theme.colors).unwrap_or_default();
+        let color_resp = ui.menu_button(lang.tr("Color"), |ui| {
+            if let Some(c) = crate::widgets::color_palette(ui, &colors, lang.tr("Automatic")) {
+                act(app, "view.focusCellColor", json!({"color": c}));
+            }
+        });
+        control_keytip(app, ui, &color_resp.response, "view.focusCellColor");
     });
     sep(ui);
     let __k = big_button(ui, Icon::Zoom, "Zoom", "Zoom…", false);

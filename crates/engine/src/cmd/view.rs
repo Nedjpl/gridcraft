@@ -1,7 +1,7 @@
 //! View tab (sheet view state that's saved with the file) and Page Layout settings.
 
 use gridcraft_core::{CellRef, RangeRef};
-use gridcraft_model::Orientation;
+use gridcraft_model::{Color, Orientation};
 use serde_json::{Value as Json, json};
 
 use super::*;
@@ -26,6 +26,7 @@ pub fn specs() -> Vec<CommandSpec> {
         cmd!("view.gridlines", "Gridlines", ["View", "Show"], None, "{on?}", has_doc, |s, p| sheet_flag(s, p, "gridlines")),
         cmd!("view.headings", "Headings", ["View", "Show"], None, "{on?}", has_doc, |s, p| sheet_flag(s, p, "headings")),
         cmd!("view.focusCell", "Focus Cell", ["View", "Show"], None, "{on?}", has_doc, |s, p| sheet_flag(s, p, "focusCell")),
+        cmd!("view.focusCellColor", "Focus Cell Color", ["View", "Show"], None, "{color?}", has_doc, focus_cell_color),
         cmd!("view.showZeros", "Show Zeros", [], None, "{on?}", has_doc, |s, p| sheet_flag(s, p, "zeros")),
         cmd!("view.rightToLeft", "Sheet Right-to-Left", ["Page Layout", "Sheet Options"], None, "{on?}", has_doc, |s, p| sheet_flag(s, p, "rtl")),
         cmd!("view.zoom", "Zoom", ["View", "Zoom"], None, "{percent: 10..400}", has_doc, zoom),
@@ -151,6 +152,22 @@ fn sheet_flag(s: &mut Session, p: &Json, which: &str) -> Result<Json> {
         };
         *slot = bool_param(p, "on").unwrap_or(!*slot);
         Ok(json!({"on": *slot}))
+    })
+}
+
+fn focus_cell_color(s: &mut Session, p: &Json) -> Result<Json> {
+    edit(s, |cx| {
+        let si = cx.sheet_index();
+        let sh = cx.sheet_mut(si)?;
+        if let Some(c) = str_param(p, "color") {
+            if c.eq_ignore_ascii_case("none") || c.eq_ignore_ascii_case("auto") {
+                sh.focus_cell_color = None;
+            } else if let Some(color) = Color::from_hex(c) {
+                sh.focus_cell_color = Some(color);
+            }
+        }
+        let color = sh.focus_cell_color.and_then(|c| c.hex(&cx.wb.theme)).unwrap_or_else(|| "none".to_string());
+        Ok(json!({"color": color}))
     })
 }
 

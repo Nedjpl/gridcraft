@@ -811,7 +811,8 @@ fn paint_panes(
         paint_quadrant(&p, geo, wb, si, sh, *rows, *cols, cf, t);
         if sh.focus_cell && sh.freeze.is_none() {
             let active = sel.active;
-            let color = Color32::from_rgba_unmultiplied(0x10, 0x7C, 0x41, 0x18);
+            let rgb = sh.focus_cell_color.and_then(|c| c.resolve(&wb.theme)).unwrap_or([0x10, 0x7C, 0x41]);
+            let color = Color32::from_rgba_unmultiplied(rgb[0], rgb[1], rgb[2], 0x18);
             if active.row >= rows.0 && active.row <= rows.1 {
                 let rr = geo.range_rect(sh, RangeRef::new(CellRef::new(active.row, cols.0), CellRef::new(active.row, cols.1)));
                 p.rect_filled(rr.intersect(p.clip_rect()), 0.0, color);

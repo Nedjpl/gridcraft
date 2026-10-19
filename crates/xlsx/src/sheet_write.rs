@@ -154,6 +154,11 @@ pub fn write_sheet(wb: &Workbook, si: usize, selected: bool, out: &mut Out) -> (
     if sheet.focus_cell {
         s.push_str(" focusCell=\"1\"");
     }
+    if let Some(color) = sheet.focus_cell_color {
+        if let Some(hex) = color.hex(&wb.theme) {
+            let _ = write!(s, " focusCellColor=\"{}\"", hex.trim_start_matches('#'));
+        }
+    }
     if sheet.view != gridcraft_model::SheetViewMode::Normal {
         let _ = write!(s, " view=\"{}\"", sheet.view.as_str());
     }

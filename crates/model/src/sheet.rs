@@ -80,6 +80,9 @@ pub struct Sheet {
     /// Excel's "Focus Cell": highlight the active cell's row and column.
     #[serde(default)]
     pub focus_cell: bool,
+    /// Optional color for the Focus Cell highlight (None = default).
+    #[serde(default)]
+    pub focus_cell_color: Option<Color>,
     pub zoom: u16,
     pub cond_formats: Vec<CondFormat>,
     pub validations: Vec<Validation>,
@@ -148,6 +151,7 @@ impl Sheet {
             show_zeros: true,
             right_to_left: false,
             focus_cell: false,
+            focus_cell_color: None,
             zoom: 100,
             cond_formats: vec![],
             validations: vec![],
