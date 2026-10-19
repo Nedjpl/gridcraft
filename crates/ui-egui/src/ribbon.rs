@@ -2154,7 +2154,7 @@ fn view(app: &mut SheetApp, ui: &mut Ui) {
             act(app, "view.focusCell", json!({"on": fc}));
         }
         let colors = app.session.active().map(|d| d.wb.theme.colors).unwrap_or_default();
-        let color_resp = ui.menu_button(lang.tr("Color"), |ui| {
+        let color_resp = ui.menu_button("▾", |ui| {
             if let Some(c) = crate::widgets::color_palette(ui, &colors, lang.tr("Automatic")) {
                 act(app, "view.focusCellColor", json!({"color": c}));
             }
